@@ -138,67 +138,77 @@ function onSpace(kbdEvent) {
     nextStage();
 }
 
-function planExperiment() {  // TODO(lutzky) this should actually be used
-    var in_order = [];
-    // get the entire experiment in one ordered array
-    // ...then shuffle it (grab one random stage at a time)  // TODO bad comment
-    word_lists = [WORDS.up, WORDS.down, WORDS.neutral];
-    for (var wl = 0; wl < 3; ++wl) {
-        var words = word_lists[wl];
-        for (var i = 0; i < words.length; i++) {
-            for (var j = 0; j < INSTANCES_PER_STIMULUS; j++) {
-                in_order.push([words[i], STIMULUS_UP]);
-                in_order.push([words[i], STIMULUS_DOWN]);
-            }
+function regularStagesInOrder(word_lists_and_categories) {
+    var result = [];
+
+    for (var i = 0; i < word_lists_and_categories.length; i++) {
+        words = word_lists_and_categories[i][0];
+        category = word_lists_and_categories[i][1];
+        for (var j = 0; j < words.length; j++) {
+            up_stage = {
+                word: words[j][0],
+                duration: words[j][1],
+                category: category,
+                stimulus: STIMULUS_UP,
+            };
+            down_stage = Object.create(up_stage);
+            down_stage.stimulus = STIMULUS_DOWN;
+
+            result.push(up_stage);
+            result.push(up_stage);
+            result.push(down_stage);
+            result.push(down_stage);
         }
     }
 
-    // TODO(lutzky): Insert no-stimulus instances (How to choose?)
+    return result;
+}
 
-    var num_stages = in_order.length;
+/*
+ * Add n catch-trials to the end of stages by duplicating n random stages to
+ * the end, with the stimulus set to NONE.
+ */
+function addCatchTrials(stages, n) {
+    original_length = stages.length;
 
-    var shuffled = [];
-    for (var i = 0; i < length; i++) {
-        shuffled.push(in_order[i]);
-        // TODO(lutzky): How to remove? Does JS have sets?
+    for (var i = 0; i < n; i++) {
+        random_stage = stages[Math.floor(Math.random() * original_length)];
+        random_stage = Object.create(random_stage);
+        random_stage.stimulus = STIMULUS_NONE;
+        stages.push(random_stage);
     }
 }
 
-function selectIt() {
-    var wordlist;
+function shuffled(arr) {
+    var original = arr.slice(0);
+    var result = []
 
-    // TODO(lutzky): What should actually happen is pre-planning of the
-    // experiment - a function that outputs a series of [word, category,
-    // stimulus] for the entire experiment, in the appropriate length.
-    // This should include the various considerations of matched and mismatched
-    // stimuli, as well as the appropriate number of no-stimulus stages.
-    // Advantages:
-    // 1. Easily testable
-    // 2. Easy to declare "experiment is over, next please"
-    var selection = Math.ceil(Math.random() * 3);
-    var stimulus = Math.ceil(Math.random() * 3);
-    if (selection == STIMULUS_UP) {
-        wordlist = WORDS.up;
-    }
-    else if (selection == STIMULUS_DOWN) {
-        wordlist = WORDS.down;
-    }
-    else {
-        wordlist = WORDS.neutral;
+    while (original.length > 0) {
+        var random_index = Math.floor(Math.random() * original.length);
+        result.push(original.splice(random_index, 1)[0]);
     }
 
-    currentResult.word_group = selection;
+    return result;
+}
 
-    console.debug("Selected wordgroup is " + selection);
-    var selected_word = wordlist[Math.floor(Math.random() * wordlist.length)];
+function planExperiment() {
+    var stages = regularStagesInOrder([
+            [WORDS.up, STIMULUS_UP],
+            [WORDS.down, STIMULUS_DOWN],
+            [WORDS.neutral, STIMULUS_NONE],
+    ]);
 
-    waitForIt(selected_word[0], selected_word[1], stimulus);
+    addCatchTrials(stages, CATCH_TRIALS);
+
+    return shuffled(stages);
 }
 
 function nextStage() {
     window.setTimeout(function() {
         $("#center").className = "";
-        selectIt();
+        CURRENT_STAGE++;
+        // TODO(lutzky): What if we're out of stages?
+        waitForIt();
     }, STAGE_DELAY);
 }
 
@@ -210,23 +220,26 @@ function clearCenter() {
     $("#center").innerText = "";
 }
 
-function waitForIt(word, delay, stimulus) {
+function waitForIt() {
+    var stage = STAGES[CURRENT_STAGE];
     spaceEnabled = false;
     setDisplay("top", false);
     setDisplay("bottom", false);
-    currentResult.word = word;
-    currentResult.stimulus_shown = stimulus;
+    currentResult.word = stage.word;
+    currentResult.stimulus_shown = stage.stimulus;
 
-    console.info("Showing word " + word + " with delay " + delay +
-                 "ms with stimulus " + stimulus);
+    console.info("Stage " + CURRENT_STAGE);
+    console.info(stage);
     userShouldPressSpace = false;
     showCross();
     setTimeout(function() {
-        $("#center").innerText = word;
+        $("#center").innerText = stage.word;
         spaceEnabled = true;
-        setWaitForSpaceTimeout(BASE_DELAY + delay, stimulus);
-    }, CROSSHAIR_DELAY);   
+        setWaitForSpaceTimeout(BASE_DELAY + stage.duration, stage.stimulus);
+    }, CROSSHAIR_DELAY);
 }
 
 
-selectIt();
+var STAGES = planExperiment();
+var CURRENT_STAGE = 0;
+waitForIt();
