@@ -83,6 +83,7 @@ function setWaitForSpaceTimeout(t, stimulus) {
     spaceWasPressed = false;
     timeout_handles.space = window.setTimeout(function() {
         console.debug("Stimulus is " + stimulus);
+        clearCenter();
         if (stimulus == STIMULUS_UP) {
             setDisplay("top", true);
             userShouldPressSpace = true;
@@ -203,6 +204,10 @@ function nextStage() {
 
 function showCross() {
     $("#center").innerText = "+";
+}
+
+function clearCenter() {
+    $("#center").innerText = "";
 }
 
 function waitForIt(word, delay, stimulus) {
