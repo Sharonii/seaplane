@@ -85,11 +85,11 @@ function setWaitForSpaceTimeout(t, stimulus) {
         console.debug("Stimulus is " + stimulus);
         clearCenter();
         if (stimulus == STIMULUS_UP) {
-            setDisplay("top", true);
+            displayStimulus("top", true);
             userShouldPressSpace = true;
         }
         else if (stimulus == STIMULUS_DOWN) {
-            setDisplay("bottom", true);
+            displayStimulus("bottom", true);
             userShouldPressSpace = true;
         }
         else {
@@ -100,14 +100,16 @@ function setWaitForSpaceTimeout(t, stimulus) {
     }, t); 
 }
 
-function setDisplay(id, visible) {
+function displayStimulus(id, visible) {
     console.debug("Setting visibility of " + id + " to " + visible);
-    elem = document.getElementById(id);
+    var elem = document.getElementById(id);
+    var style = window.getComputedStyle(document.body);
     if (visible) {
-        elem.style.display = "initial"; // TODO(lutzky): Is this appropriate?
+        elem.style.color = STIMULUS_COLOR;
     }
     else {
-        elem.style.display = "none";
+        var style = window.getComputedStyle(document.body);
+        elem.style.color = style.backgroundColor;
     }
 }
 
@@ -213,7 +215,7 @@ function nextStage() {
 }
 
 function showCross() {
-    $("#center").innerText = "+";
+    $("#center").innerHTML = "<span style='color: white'>+</span>";
 }
 
 function clearCenter() {
@@ -223,8 +225,8 @@ function clearCenter() {
 function waitForIt() {
     var stage = STAGES[CURRENT_STAGE];
     spaceEnabled = false;
-    setDisplay("top", false);
-    setDisplay("bottom", false);
+    displayStimulus("top", false);
+    displayStimulus("bottom", false);
     currentResult.word = stage.word;
     currentResult.stimulus_shown = stage.stimulus;
 

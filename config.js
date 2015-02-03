@@ -11,6 +11,9 @@ CROSSHAIR_DELAY = 1000;
 // Delay between stages (after hitting space or hitting the deadline)
 STAGE_DELAY = 2000;
 
+// Color for stimuli circles at bottom and top (values for RGB are 0-255)
+STIMULUS_COLOR = 'rgb(100, 100, 100)';
+
 // Number of catch trials (trials with no stimulus)
 CATCH_TRIALS = 24;
 

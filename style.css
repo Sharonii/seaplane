@@ -1,12 +1,18 @@
-#top, #bottom, #center {
+body {
+    background-color: #999;
+    color: black;
+}
+
+#top, #bottom {
+    font-size: 22pt;
+}
+
+#top_container, #bottom_container, #center {
+    font-size: 16pt;
     text-align: center;
     left: 50%;
     transform: translateX(-50%);
     position: absolute;
-}
-
-#top, #bottom {
-    display: none;
 }
 
 #center {
@@ -14,14 +20,16 @@
     transform: translate(-50%, -50%);
 }
 
-#bottom {
+#bottom_container {
     bottom: 0;
 }
 
-.good {
-    color: #0c0;
+#center.good {
+    color: #050;
 }
 
-.bad {
-    color: #c00;
+#center.bad {
+    font-size: 60pt;
+    font-weight: bolder;
+    color: #f00;
 }
