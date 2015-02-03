@@ -3,7 +3,7 @@
 DEADLINE = 2000;
 
 // Base delay for all words. This is added to the word-specific delay in WORDS.
-BASE_DELAY = 500;
+BASE_DELAY = 0;
 
 // Amount of time to show the focus crosshair before showing the word.
 CROSSHAIR_DELAY = 1000;
