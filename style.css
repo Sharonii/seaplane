@@ -1,0 +1,26 @@
+#top, #bottom, #center {
+    text-align: center;
+    width: 100%;
+    position: absolute;
+}
+
+#top, #bottom {
+    display: none;
+}
+
+#center {
+    top: 50%;
+    margin-top: -0.5em;
+}
+
+#bottom {
+    bottom: 0;
+}
+
+.good {
+    color: #0c0;
+}
+
+.bad {
+    color: #c00;
+}
