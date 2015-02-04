@@ -4,11 +4,15 @@
  * Implementation of seaplane experiment as designed by Sharon Novikov.
  */
 
-var flipme = false;
 var userShouldPressSpace = false;
 var startTime = performance.now();
 var spaceWasPressed = false;
 var spaceEnabled = false;
+var STAGES = [];
+var CURRENT_STAGE = 0;
+var SUBJECT_ID = 0;
+var TSV_RESULTS = [];
+var currentResult = null;
 
 function $(selector) {
     // Poor man's implementation, no jquery necessary.
@@ -26,7 +30,6 @@ var STIMULUS_NONE = 3;
 
 Result = function() { // TODO(lutzky) is this how you define classes?
     return {
-        subject_id: 42, // TODO(lutzky)
         word: null,
         word_group: null,
         stimulus_shown: null,
@@ -35,11 +38,31 @@ Result = function() { // TODO(lutzky) is this how you define classes?
     };
 }
 
-var currentResult = new Result();
-
 function outputResult() {
-    // TODO(lutzky)
-    console.info(currentResult);
+    var startOutput = performance.now();
+    var tsv = "";
+    tsv += SUBJECT_ID;
+    tsv += "\t" + (CURRENT_STAGE + 1);
+    values = [currentResult.word, currentResult.word_group,
+              currentResult.stimulus_shown, currentResult.reaction_time,
+              currentResult.subject_behavior_correct ? 1 : 0];
+    for (var i = 0; i < values.length; i++) {
+        if (values[i] === null) {
+            console.error("currentResult has a null value");
+            console.error(currentResult);
+            throw "currentResult has a null value";
+        }
+        tsv += "\t" + values[i];
+    }
+
+    tsv += "\r\n";
+    TSV_RESULTS.push(tsv);
+
+    result_tsv_blob = new Blob(TSV_RESULTS);
+    $('#download').href = URL.createObjectURL(result_tsv_blob);
+    elapsed = Math.floor(performance.now() - startOutput);
+    console.debug("TSV output took " + elapsed + "ms");
+    console.debug("TSV: " + tsv);
 }
 
 window.onkeypress = function(kbdEvent) {
@@ -61,12 +84,14 @@ function setAbsoluteTimeout(stimulus) {
         currentResult.reaction_time = DEADLINE;
         unsetTimeout("space");
         if (spaceWasPressed) {
-            console.error("Got to absoluteTimeout function with spaceWasPressed = true");
+            throw "Got to absoluteTimeout function with spaceWasPressed = true";
         }
         if (userShouldPressSpace) {
+            currentResult.subject_behavior_correct = false;
             showResult("TOO SLOW", false);
         }
         else {
+            currentResult.subject_behavior_correct = true;
             showResult("NICE PATIENCE", true);
         }
         outputResult();
@@ -124,9 +149,11 @@ function onSpace(kbdEvent) {
     unsetTimeout("absolute");
 
     if (!userShouldPressSpace) {
+        currentResult.subject_behavior_correct = false;
         tooSoon();
     }
     else {
+        currentResult.subject_behavior_correct = true;
         showResult(currentResult.reaction_time + "ms", true);
     }
 
@@ -200,12 +227,16 @@ function planExperiment() {
 }
 
 function nextStage() {
-    window.setTimeout(function() {
-        $("#center").className = "";
-        CURRENT_STAGE++;
-        // TODO(lutzky): What if we're out of stages?
-        waitForIt();
-    }, STAGE_DELAY);
+    if (CURRENT_STAGE >= STAGES.length) {
+        startExperiment();
+    }
+    else {
+        window.setTimeout(function() {
+            $("#center").className = "";
+            CURRENT_STAGE++;
+            waitForIt();
+        }, STAGE_DELAY);
+    }
 }
 
 function showCross() {
@@ -221,7 +252,9 @@ function waitForIt() {
     spaceEnabled = false;
     displayStimulus("top", false);
     displayStimulus("bottom", false);
+    currentResult = new Result();
     currentResult.word = stage.word;
+    currentResult.word_group = stage.category;
     currentResult.stimulus_shown = stage.stimulus;
 
     console.info("Stage " + CURRENT_STAGE);
@@ -235,7 +268,12 @@ function waitForIt() {
     }, CROSSHAIR_DELAY);
 }
 
+/* Start the experiment with a new subject */
+function startExperiment() {
+    SUBJECT_ID = prompt("Enter subject ID");
+    STAGES = planExperiment();
+    CURRENT_STAGE = 0;
+    waitForIt();
+}
 
-var STAGES = planExperiment();
-var CURRENT_STAGE = 0;
-waitForIt();
+startExperiment();

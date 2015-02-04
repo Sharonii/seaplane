@@ -42,3 +42,16 @@ body {
     font-weight: bolder;
     color: #f00;
 }
+
+#download {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    font-size: 16pt;
+    color: #777;
+    text-decoration: none;
+}
+
+#download:hover {
+    color: #333;
+}
