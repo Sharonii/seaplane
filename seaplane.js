@@ -4,15 +4,17 @@
  * Implementation of seaplane experiment as designed by Sharon Novikov.
  */
 
-var userShouldPressSpace = false;
-var startTime = performance.now();
-var spaceWasPressed = false;
-var spaceEnabled = false;
-var STAGES = [];
-var CURRENT_STAGE = 0;
-var SUBJECT_ID = 0;
-var TSV_RESULTS = [];
-var currentResult = null;
+var seaplane = {
+    userShouldPressSpace: false,
+    startTime: null,
+    spaceWasPressed: false,
+    spaceEnabled: false,
+    stages: [],
+    currentStage: 0,
+    subjectId: 0,
+    tsvResults: [],
+    currentResult: null,
+}
 
 function $(selector) {
     // Poor man's implementation, no jquery necessary.
@@ -28,37 +30,39 @@ var STIMULUS_UP = 1;
 var STIMULUS_DOWN = 2;
 var STIMULUS_NONE = 3;
 
-Result = function() { // TODO(lutzky) is this how you define classes?
-    return {
-        word: null,
-        word_group: null,
-        stimulus_shown: null,
-        subject_behavior_correct: null,
-        reaction_time: null,
-    };
+Result = function() {
+    this.word = null;
+    this.word_group = null;
+    this.stimulus_shown = null;
+    this.subject_behavior_correct = null;
+    this.reaction_time = null;
 }
 
 function outputResult() {
     var startOutput = performance.now();
     var tsv = "";
-    tsv += SUBJECT_ID;
-    tsv += "\t" + (CURRENT_STAGE + 1);
-    values = [currentResult.word, currentResult.word_group,
-              currentResult.stimulus_shown, currentResult.reaction_time,
-              currentResult.subject_behavior_correct ? 1 : 0];
+    tsv += seaplane.subjectId;
+    tsv += "\t" + (seaplane.currentStage + 1);
+    values = [
+            seaplane.currentResult.word,
+            seaplane.currentResult.word_group,
+            seaplane.currentResult.stimulus_shown,
+            seaplane.currentResult.reaction_time,
+            seaplane.currentResult.subject_behavior_correct ? 1 : 0,
+    ];
     for (var i = 0; i < values.length; i++) {
         if (values[i] === null) {
-            console.error("currentResult has a null value");
-            console.error(currentResult);
-            throw "currentResult has a null value";
+            console.error("seaplane.currentResult has a null value");
+            console.error(seaplane.currentResult);
+            throw "seaplane.currentResult has a null value";
         }
         tsv += "\t" + values[i];
     }
 
     tsv += "\r\n";
-    TSV_RESULTS.push(tsv);
+    seaplane.tsvResults.push(tsv);
 
-    result_tsv_blob = new Blob(TSV_RESULTS);
+    result_tsv_blob = new Blob(seaplane.tsvResults);
     $('#download').href = URL.createObjectURL(result_tsv_blob);
     elapsed = Math.floor(performance.now() - startOutput);
     console.debug("TSV output took " + elapsed + "ms");
@@ -80,18 +84,18 @@ function unsetTimeout(name) {
 
 function setAbsoluteTimeout(stimulus) {
     timeout_handles.absolute = window.setTimeout(function() {
-        spaceEnabled = false;
-        currentResult.reaction_time = DEADLINE;
+        seaplane.spaceEnabled = false;
+        seaplane.currentResult.reaction_time = DEADLINE;
         unsetTimeout("space");
-        if (spaceWasPressed) {
+        if (seaplane.spaceWasPressed) {
             throw "Got to absoluteTimeout function with spaceWasPressed = true";
         }
-        if (userShouldPressSpace) {
-            currentResult.subject_behavior_correct = false;
+        if (seaplane.userShouldPressSpace) {
+            seaplane.currentResult.subject_behavior_correct = false;
             showResult("TOO SLOW", false);
         }
         else {
-            currentResult.subject_behavior_correct = true;
+            seaplane.currentResult.subject_behavior_correct = true;
             showResult("NICE PATIENCE", true);
         }
         outputResult();
@@ -105,22 +109,22 @@ function showResult(text, isGood) {
 }
 
 function setWaitForSpaceTimeout(t, stimulus) {
-    spaceWasPressed = false;
+    seaplane.spaceWasPressed = false;
     timeout_handles.space = window.setTimeout(function() {
         console.debug("Stimulus is " + stimulus);
         clearCenter();
         if (stimulus == STIMULUS_UP) {
             displayStimulus("top", true);
-            userShouldPressSpace = true;
+            seaplane.userShouldPressSpace = true;
         }
         else if (stimulus == STIMULUS_DOWN) {
             displayStimulus("bottom", true);
-            userShouldPressSpace = true;
+            seaplane.userShouldPressSpace = true;
         }
         else {
-            userShouldPressSpace = false;
+            seaplane.userShouldPressSpace = false;
         }
-        startTime = performance.now();
+        seaplane.startTime = performance.now();
         setAbsoluteTimeout(stimulus);
     }, t); 
 }
@@ -137,24 +141,25 @@ function tooSoon() {
 }
 
 function onSpace(kbdEvent) {
-    if (!spaceEnabled) {
+    if (!seaplane.spaceEnabled) {
         console.debug("Space hit while disabled");
         return;
     }
-    spaceEnabled = false;
+    seaplane.spaceEnabled = false;
 
-    currentResult.reaction_time = Math.floor(performance.now() - startTime);
-    spaceWasPressed = true;
+    var elapsed = Math.floor(performance.now() - seaplane.startTime);
+    seaplane.currentResult.reaction_time = elapsed;
+    seaplane.spaceWasPressed = true;
     unsetTimeout("space");
     unsetTimeout("absolute");
 
-    if (!userShouldPressSpace) {
-        currentResult.subject_behavior_correct = false;
+    if (!seaplane.userShouldPressSpace) {
+        seaplane.currentResult.subject_behavior_correct = false;
         tooSoon();
     }
     else {
-        currentResult.subject_behavior_correct = true;
-        showResult(currentResult.reaction_time + "ms", true);
+        seaplane.currentResult.subject_behavior_correct = true;
+        showResult(seaplane.currentResult.reaction_time + "ms", true);
     }
 
     outputResult();
@@ -227,13 +232,13 @@ function planExperiment() {
 }
 
 function nextStage() {
-    if (CURRENT_STAGE >= STAGES.length) {
+    if (seaplane.currentStage >= seaplane.stages.length) {
         startExperiment();
     }
     else {
         window.setTimeout(function() {
             $("#center").className = "";
-            CURRENT_STAGE++;
+            seaplane.currentStage++;
             waitForIt();
         }, STAGE_DELAY);
     }
@@ -248,31 +253,31 @@ function clearCenter() {
 }
 
 function waitForIt() {
-    var stage = STAGES[CURRENT_STAGE];
-    spaceEnabled = false;
+    var stage = seaplane.stages[seaplane.currentStage];
+    seaplane.spaceEnabled = false;
     displayStimulus("top", false);
     displayStimulus("bottom", false);
-    currentResult = new Result();
-    currentResult.word = stage.word;
-    currentResult.word_group = stage.category;
-    currentResult.stimulus_shown = stage.stimulus;
+    seaplane.currentResult = new Result();
+    seaplane.currentResult.word = stage.word;
+    seaplane.currentResult.word_group = stage.category;
+    seaplane.currentResult.stimulus_shown = stage.stimulus;
 
-    console.info("Stage " + CURRENT_STAGE);
+    console.info("Stage " + seaplane.currentStage);
     console.info(stage);
-    userShouldPressSpace = false;
+    seaplane.userShouldPressSpace = false;
     showCross();
     setTimeout(function() {
         $("#center").innerText = stage.word;
-        spaceEnabled = true;
+        seaplane.spaceEnabled = true;
         setWaitForSpaceTimeout(BASE_DELAY + stage.duration, stage.stimulus);
     }, CROSSHAIR_DELAY);
 }
 
 /* Start the experiment with a new subject */
 function startExperiment() {
-    SUBJECT_ID = prompt("Enter subject ID");
-    STAGES = planExperiment();
-    CURRENT_STAGE = 0;
+    seaplane.subjectId = prompt("Enter subject ID");
+    seaplane.stages = planExperiment();
+    seaplane.currentStage = 0;
     waitForIt();
 }
 
