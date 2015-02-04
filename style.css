@@ -7,6 +7,15 @@ body {
     font-size: 22pt;
 }
 
+#top.active, #bottom.active {
+    color: #dedede;
+}
+
+#top.inactive, #bottom.inactive {
+    /* Keep same as body background-color */
+    color: #999;
+}
+
 #top_container, #bottom_container, #center {
     font-size: 16pt;
     text-align: center;

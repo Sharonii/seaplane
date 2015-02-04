@@ -104,13 +104,7 @@ function displayStimulus(id, visible) {
     console.debug("Setting visibility of " + id + " to " + visible);
     var elem = document.getElementById(id);
     var style = window.getComputedStyle(document.body);
-    if (visible) {
-        elem.style.color = STIMULUS_COLOR;
-    }
-    else {
-        var style = window.getComputedStyle(document.body);
-        elem.style.color = style.backgroundColor;
-    }
+    elem.className = visible ? 'active' : 'inactive';
 }
 
 function tooSoon() {
