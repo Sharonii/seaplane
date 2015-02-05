@@ -11,6 +11,9 @@ CROSSHAIR_DELAY = 1000;
 // Delay between stages (after hitting space or hitting the deadline)
 STAGE_DELAY = 2000;
 
+// Number of catch trials (trials with no stimulus)
+CATCH_TRIALS = 24;
+
 WORDS = {
     up: [
         ["ציפור", 250, "tzipor"],
