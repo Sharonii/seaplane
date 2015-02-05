@@ -14,6 +14,9 @@ STAGE_DELAY = 2000;
 // Number of catch trials (trials with no stimulus)
 CATCH_TRIALS = 24;
 
+// Inter-stimulus interval - time from word disappearing to stimulus showing
+ISI_DELAY = 50;
+
 WORDS = {
     up: [
         ["ציפור", 250, "tzipor"],

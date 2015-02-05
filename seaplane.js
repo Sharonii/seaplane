@@ -24,6 +24,7 @@ function $(selector) {
 timeout_handles = {
     absolute: null,
     space: null,
+    isi: null,
 }
 
 var STIMULUS_UP = 1;
@@ -87,6 +88,7 @@ function setAbsoluteTimeout(stimulus) {
         seaplane.spaceEnabled = false;
         seaplane.currentResult.reaction_time = DEADLINE;
         unsetTimeout("space");
+        unsetTimeout("isi");
         if (seaplane.spaceWasPressed) {
             throw "Got to absoluteTimeout function with spaceWasPressed = true";
         }
@@ -113,19 +115,21 @@ function setWaitForSpaceTimeout(t, stimulus) {
     timeout_handles.space = window.setTimeout(function() {
         console.debug("Stimulus is " + stimulus);
         clearCenter();
-        if (stimulus == STIMULUS_UP) {
-            displayStimulus("top", true);
-            seaplane.userShouldPressSpace = true;
-        }
-        else if (stimulus == STIMULUS_DOWN) {
-            displayStimulus("bottom", true);
-            seaplane.userShouldPressSpace = true;
-        }
-        else {
-            seaplane.userShouldPressSpace = false;
-        }
-        seaplane.startTime = performance.now();
-        setAbsoluteTimeout(stimulus);
+        timeout_handles.isi = window.setTimeout(function() {
+            if (stimulus == STIMULUS_UP) {
+                displayStimulus("top", true);
+                seaplane.userShouldPressSpace = true;
+            }
+            else if (stimulus == STIMULUS_DOWN) {
+                displayStimulus("bottom", true);
+                seaplane.userShouldPressSpace = true;
+            }
+            else {
+                seaplane.userShouldPressSpace = false;
+            }
+            seaplane.startTime = performance.now();
+            setAbsoluteTimeout(stimulus);
+        }, ISI_DELAY);
     }, t); 
 }
 
@@ -152,6 +156,7 @@ function onSpace(kbdEvent) {
     seaplane.spaceWasPressed = true;
     unsetTimeout("space");
     unsetTimeout("absolute");
+    unsetTimeout("isi");
 
     if (!seaplane.userShouldPressSpace) {
         seaplane.currentResult.subject_behavior_correct = false;
