@@ -34,6 +34,7 @@ var STIMULUS_NONE = 3;
 Result = function() {
     this.word = null;
     this.word_group = null;
+    this.word_english = null;
     this.stimulus_shown = null;
     this.subject_behavior_correct = null;
     this.reaction_time = null;
@@ -45,7 +46,7 @@ function outputResult() {
     tsv += seaplane.subjectId;
     tsv += "\t" + (seaplane.currentStage + 1);
     values = [
-            seaplane.currentResult.word,
+            seaplane.currentResult.word_english,
             seaplane.currentResult.word_group,
             seaplane.currentResult.stimulus_shown,
             seaplane.currentResult.reaction_time,
@@ -181,6 +182,7 @@ function regularStagesInOrder(word_lists_and_categories) {
             up_stage = {
                 word: words[j][0],
                 duration: words[j][1],
+                word_english: words[j][2],
                 category: category,
                 stimulus: STIMULUS_UP,
             };
@@ -265,6 +267,7 @@ function waitForIt() {
     seaplane.currentResult = new Result();
     seaplane.currentResult.word = stage.word;
     seaplane.currentResult.word_group = stage.category;
+    seaplane.currentResult.word_english = stage.word_english;
     seaplane.currentResult.stimulus_shown = stage.stimulus;
 
     console.info("Stage " + seaplane.currentStage);
