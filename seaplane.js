@@ -29,7 +29,7 @@ timeout_handles = {
 
 var STIMULUS_UP = 1;
 var STIMULUS_DOWN = 2;
-var STIMULUS_NONE = 3;
+var STIMULUS_NONE = 0;
 
 Result = function() {
     this.word = null;
