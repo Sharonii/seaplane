@@ -99,7 +99,7 @@ function setAbsoluteTimeout(stimulus) {
         }
         else {
             seaplane.currentResult.subject_behavior_correct = true;
-            showResult("NICE PATIENCE", true);
+            console.info("Subject was patient and did not jump the gun");
         }
         outputResult();
         nextStage();
@@ -165,7 +165,8 @@ function onSpace(kbdEvent) {
     }
     else {
         seaplane.currentResult.subject_behavior_correct = true;
-        showResult(seaplane.currentResult.reaction_time + "ms", true);
+        console.info("Subject reacted in " +
+                     seaplane.currentResult.reaction_time + "ms");
     }
 
     outputResult();
