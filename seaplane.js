@@ -239,16 +239,17 @@ function planExperiment() {
 }
 
 function nextStage() {
-    if (seaplane.currentStage >= seaplane.stages.length) {
-        startExperiment();
-    }
-    else {
-        window.setTimeout(function() {
+    seaplane.currentStage++;
+    window.setTimeout(function() {
+        if (seaplane.currentStage < seaplane.stages.length) {
             $("#center").className = "";
-            seaplane.currentStage++;
             waitForIt();
-        }, STAGE_DELAY);
-    }
+        }
+        else {
+            $("#kthxbye").style.display = "initial";
+            $("#download").click()
+        }
+    }, STAGE_DELAY);
 }
 
 function showCross() {
