@@ -253,7 +253,7 @@ function nextStage() {
 }
 
 function showCross() {
-    $("#center").innerHTML = "<span style='color: white'>+</span>";
+    $("#center").innerHTML = "<span class='crosshair'>+</span>";
 }
 
 function clearCenter() {

@@ -57,6 +57,11 @@ body {
     color: #333;
 }
 
+.crosshair {
+    color: white;
+    font-size: 32pt;
+}
+
 #kthxbye {
     display: none;
 
