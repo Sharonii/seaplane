@@ -98,6 +98,9 @@ function unsetTimeout(name) {
 function setAbsoluteTimeout(stimulus) {
     timeout_handles.absolute = window.setTimeout(function() {
         seaplane.spaceHandler = null;
+        displayStimulus("top", false);
+        displayStimulus("bottom", false);
+
         seaplane.currentResult.reaction_time = DEADLINE;
         unsetTimeout("space");
         unsetTimeout("isi");
@@ -158,6 +161,8 @@ function tooSoon() {
 
 function onResponse(kbdEvent) {
     seaplane.spaceHandler = null;
+    displayStimulus("top", false);
+    displayStimulus("bottom", false);
 
     var elapsed = Math.floor(performance.now() - seaplane.startTime);
     seaplane.currentResult.reaction_time = elapsed;
