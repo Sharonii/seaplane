@@ -207,10 +207,15 @@ function regularStagesInOrder(word_lists_and_categories) {
             down_stage = Object.create(up_stage);
             down_stage.stimulus = STIMULUS_DOWN;
 
-            result.push(up_stage);
-            result.push(up_stage);
-            result.push(down_stage);
-            result.push(down_stage);
+            if (seaplane.practiceMode) {
+                result.push((Math.random() > 0.5) ? up_stage : down_stage)
+            }
+            else {
+                result.push(up_stage);
+                result.push(up_stage);
+                result.push(down_stage);
+                result.push(down_stage);
+            }
         }
     }
 
@@ -226,9 +231,14 @@ function addCatchTrials(stages, n) {
 
     for (var i = 0; i < n; i++) {
         random_stage = stages[Math.floor(Math.random() * original_length)];
-        random_stage = Object.create(random_stage);
-        random_stage.stimulus = STIMULUS_NONE;
-        stages.push(random_stage);
+        if (seaplane.practiceMode) {
+            random_stage.stimulus = STIMULUS_NONE;
+        }
+        else {
+            random_stage_copy = Object.create(random_stage);
+            random_stage_copy.stimulus = STIMULUS_NONE;
+            stages.push(random_stage_copy);
+        }
     }
 }
 
