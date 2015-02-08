@@ -17,7 +17,8 @@ QUnit.test("TSV output", function(assert) {
 	subject_behavior_correct: 1,
     }
     assert.equal(resultToTsv(result, 123, 50),
-	         "123\t51\tenglish\t2\t1\t42\t1\r\n");
+	         "123\t51\tenglish\t2\t1\t42\t1\r\n",
+		 "Correct TSV output");
 });
 
 QUnit.test("Stage generation", function(assert) {
@@ -211,7 +212,8 @@ QUnit.test("Stage generation", function(assert) {
 		word: "hebrew6",
 		word_english: "english6"
 	      }
-	    ]);
+	    ],
+	"Generated experiment should contain various copies of input words");
 });
 
 QUnit.test("Stage generation", function(assert) {
@@ -228,7 +230,8 @@ QUnit.test("Stage generation", function(assert) {
 	1: total_words * 2,
 	2: total_words * 2,
     }
-    assert.deepEqual(stimuli_histogram, expected_histogram);
+    assert.deepEqual(stimuli_histogram, expected_histogram,
+	             "Stimuli histogram: " + JSON.stringify(stimuli_histogram));
 });
 
 QUnit.test("Practice stage generation", function(assert) {
@@ -242,7 +245,9 @@ QUnit.test("Practice stage generation", function(assert) {
     }
     
     console.info("Practice experiment:", experiment);
-    assert.equal(experiment.length, WORDS.practice.length);
+    assert.equal(experiment.length, WORDS.practice.length,
+	         "Practice experiment should have one stage per word - " +
+		 WORDS.practice.length);
     assert.equal(stimuli_histogram[0], CATCH_TRIALS_PRACTICE,
                  "Number of catch trials should be " + CATCH_TRIALS_PRACTICE);
     assert.ok(stimuli_histogram[1] >= 2, "At least 2 up stimuli - got " +
