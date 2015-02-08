@@ -164,7 +164,7 @@ function displayStimulus(id, visible) {
 }
 
 function tooSoon() {
-    showResult("TOO SOON", false);
+    showResult("שגיאה", false);
 }
 
 function onResponse(kbdEvent) {
