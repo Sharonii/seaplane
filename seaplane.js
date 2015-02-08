@@ -41,30 +41,35 @@ Result = function() {
     this.reaction_time = null;
 }
 
-function outputResult() {
-    var startOutput = performance.now();
+function resultToTsv(result, subjectId, currentStage) {
     var tsv = "";
-    tsv += seaplane.subjectId;
-    tsv += "\t" + (seaplane.currentStage + 1);
+    tsv += subjectId;
+    tsv += "\t" + (currentStage + 1);
     values = [
-            seaplane.currentResult.word_english,
-            seaplane.currentResult.word_group,
-            seaplane.currentResult.stimulus_shown,
-            seaplane.currentResult.reaction_time,
-            seaplane.currentResult.subject_behavior_correct ? 1 : 0,
+            result.word_english,
+            result.word_group,
+            result.stimulus_shown,
+            result.reaction_time,
+            result.subject_behavior_correct ? 1 : 0,
     ];
     for (var i = 0; i < values.length; i++) {
         if (values[i] === null) {
-            console.error("seaplane.currentResult has a null value");
-            console.error(seaplane.currentResult);
-            throw "seaplane.currentResult has a null value";
+            console.error("result", result, "has a null value");
+            throw "result has a null value";
         }
         tsv += "\t" + values[i];
     }
-
     tsv += "\r\n";
 
-    console.debug("TSV: " + tsv);
+    return tsv;
+}
+
+function outputResult() {
+    var startOutput = performance.now();
+    var tsv = resultToTsv(seaplane.currentResult, seaplane.subjectId,
+                          seaplane.currentStage);
+
+    console.debug("TSV:", tsv);
 
     if (seaplane.practiceMode) {
         console.debug("Practice stage - Not updating TSV blob");
@@ -131,7 +136,7 @@ function showResult(text, isGood) {
 function setWaitForSpaceTimeout(t, stimulus) {
     seaplane.spaceWasPressed = false;
     timeout_handles.space = window.setTimeout(function() {
-        console.debug("Stimulus is " + stimulus);
+        console.debug("Stimulus is ", stimulus);
         clearCenter();
         timeout_handles.isi = window.setTimeout(function() {
             if (stimulus == STIMULUS_UP) {
@@ -152,7 +157,7 @@ function setWaitForSpaceTimeout(t, stimulus) {
 }
 
 function displayStimulus(id, visible) {
-    console.debug("Setting visibility of " + id + " to " + visible);
+    console.debug("Setting visibility of", id, "to", visible);
     var elem = document.getElementById(id);
     var style = window.getComputedStyle(document.body);
     elem.className = visible ? 'active' : 'inactive';
@@ -314,8 +319,7 @@ function waitForIt() {
     seaplane.currentResult.word_english = stage.word_english;
     seaplane.currentResult.stimulus_shown = stage.stimulus;
 
-    console.info("Stage " + seaplane.currentStage);
-    console.info(stage);
+    console.info("Stage", seaplane.currentStage, stage);
     seaplane.userShouldPressSpace = false;
     showCross();
     setTimeout(function() {
@@ -355,5 +359,3 @@ function introduction() {
         startExperiment(true);  // Practice
     };
 }
-
-introduction();
