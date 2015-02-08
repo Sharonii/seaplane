@@ -230,12 +230,20 @@ function regularStagesInOrder(word_lists_and_categories) {
 /*
  * Add n catch-trials to the end of stages by duplicating n random stages to
  * the end, with the stimulus set to NONE.
+ * In practice mode, the originals will be replaced with catch-trials.
  */
 function addCatchTrials(stages, n) {
     original_length = stages.length;
 
+    var already_selected = {}
     for (var i = 0; i < n; i++) {
-        random_stage = stages[Math.floor(Math.random() * original_length)];
+        do {
+            random_index = Math.floor(Math.random() * original_length);
+        } while(random_index in already_selected);
+
+        already_selected[random_index] = true;
+
+        random_stage = stages[random_index];
         if (seaplane.practiceMode) {
             random_stage.stimulus = STIMULUS_NONE;
         }
