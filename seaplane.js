@@ -201,6 +201,16 @@ function regularStagesInOrder(word_lists_and_categories) {
     for (var i = 0; i < word_lists_and_categories.length; i++) {
         words = word_lists_and_categories[i][0];
         category = word_lists_and_categories[i][1];
+        var stimuli = [];
+
+        if (seaplane.practiceMode) {
+            for (i = 0; i < words.length / 2; i++) {
+                stimuli.push(STIMULUS_UP);
+                stimuli.push(STIMULUS_DOWN);
+            }
+            stimuli = shuffled(stimuli);
+        }
+
         for (var j = 0; j < words.length; j++) {
             up_stage = {
                 word: words[j][0],
@@ -209,13 +219,14 @@ function regularStagesInOrder(word_lists_and_categories) {
                 category: category,
                 stimulus: STIMULUS_UP,
             };
-            down_stage = Object.create(up_stage);
-            down_stage.stimulus = STIMULUS_DOWN;
 
             if (seaplane.practiceMode) {
-                result.push((Math.random() > 0.5) ? up_stage : down_stage)
+                up_stage.stimulus = stimuli[j];
+                result.push(up_stage);
             }
             else {
+                down_stage = Object.create(up_stage);
+                down_stage.stimulus = STIMULUS_DOWN;
                 result.push(up_stage);
                 result.push(up_stage);
                 result.push(down_stage);

@@ -245,6 +245,8 @@ QUnit.test("Practice stage generation", function(assert) {
     assert.equal(experiment.length, WORDS.practice.length);
     assert.equal(stimuli_histogram[0], CATCH_TRIALS_PRACTICE,
                  "Number of catch trials should be " + CATCH_TRIALS_PRACTICE);
-    assert.ok(stimuli_histogram[1] > 2, "At least 2 up stimuli");
-    assert.ok(stimuli_histogram[2] > 2, "At least 2 down stimuli");
+    assert.ok(stimuli_histogram[1] >= 2, "At least 2 up stimuli - got " +
+	                                 stimuli_histogram[1]);
+    assert.ok(stimuli_histogram[2] >= 2, "At least 2 down stimuli - got " +
+	                                 stimuli_histogram[2]);
 });
