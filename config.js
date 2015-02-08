@@ -8,8 +8,11 @@ BASE_DELAY = 0;
 // Amount of time to show the focus crosshair before showing the word.
 CROSSHAIR_DELAY = 1000;
 
-// Delay between stages (after hitting space or hitting the deadline)
-STAGE_DELAY = 2000;
+// Delay between stages, after hitting space
+STAGE_DELAY = 50;
+
+// Delay between stages on an error - jumping the gun or hitting deadline
+STAGE_DELAY_ON_ERROR = 1500;
 
 // Number of catch trials (trials with no stimulus)
 CATCH_TRIALS = 24;

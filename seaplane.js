@@ -97,6 +97,8 @@ function unsetTimeout(name) {
 
 function setAbsoluteTimeout(stimulus) {
     timeout_handles.absolute = window.setTimeout(function() {
+        var isError = false;
+
         seaplane.spaceHandler = null;
         displayStimulus("top", false);
         displayStimulus("bottom", false);
@@ -110,13 +112,14 @@ function setAbsoluteTimeout(stimulus) {
         if (seaplane.userShouldPressSpace) {
             seaplane.currentResult.subject_behavior_correct = false;
             showResult("TOO SLOW", false);
+            isError = true;
         }
         else {
             seaplane.currentResult.subject_behavior_correct = true;
             console.info("Subject was patient and did not jump the gun");
         }
         outputResult();
-        nextStage();
+        nextStage(isError);
     }, DEADLINE);
 }
 
@@ -160,6 +163,7 @@ function tooSoon() {
 }
 
 function onResponse(kbdEvent) {
+    var isError = false;
     seaplane.spaceHandler = null;
     displayStimulus("top", false);
     displayStimulus("bottom", false);
@@ -174,6 +178,7 @@ function onResponse(kbdEvent) {
     if (!seaplane.userShouldPressSpace) {
         seaplane.currentResult.subject_behavior_correct = false;
         tooSoon();
+        isError = true;
     }
     else {
         seaplane.currentResult.subject_behavior_correct = true;
@@ -182,7 +187,7 @@ function onResponse(kbdEvent) {
     }
 
     outputResult();
-    nextStage();
+    nextStage(isError);
 }
 
 function regularStagesInOrder(word_lists_and_categories) {
@@ -261,7 +266,7 @@ function planExperiment() {
     return shuffled(stages);
 }
 
-function nextStage() {
+function nextStage(isError) {
     seaplane.currentStage++;
     window.setTimeout(function() {
         if (seaplane.currentStage < seaplane.stages.length) {
@@ -277,7 +282,7 @@ function nextStage() {
             }
 
         }
-    }, STAGE_DELAY);
+    }, isError ? STAGE_DELAY_ON_ERROR : STAGE_DELAY);
 }
 
 function showCross() {
