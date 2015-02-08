@@ -116,7 +116,7 @@ function setAbsoluteTimeout(stimulus) {
         }
         if (seaplane.userShouldPressSpace) {
             seaplane.currentResult.subject_behavior_correct = false;
-            showResult("TOO SLOW", false);
+            showResult("לאט מדי", false);
             isError = true;
         }
         else {
