@@ -3,7 +3,7 @@ body {
     background-color: #999;
     color: black;
     font-size: 40;
-    font-style: Arial;
+    font-family: Times;
 }
 
 #top, #bottom {
@@ -76,5 +76,5 @@ body {
     text-align: right;
     border: 1px solid black;
     background-color: #bbb;
-    font-family: Tahoma;
+    font-family: Times;
 }
