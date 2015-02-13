@@ -33,7 +33,11 @@ body {
 }
 
 #bottom_container {
-    bottom: 0;
+    bottom: 2;
+}
+
+#top_container {
+    top: 2;
 }
 
 #center.good {
